@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Historic;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class HistoricController extends Controller
 {
@@ -12,7 +13,11 @@ class HistoricController extends Controller
      */
     public function index()
     {
-        //
+        $historic = Historic::all();
+
+        return Inertia::render('Historic/Index', [
+            'historic' => $historic,
+        ]);
     }
 
     /**

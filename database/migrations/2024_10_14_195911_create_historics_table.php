@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->decimal('total_before', 10, 2);
             $table->decimal('total_after', 10, 2);
+            $table->integer('user_id_transaction')->nullable();
             $table->date('date');
             $table->timestamps();
         });

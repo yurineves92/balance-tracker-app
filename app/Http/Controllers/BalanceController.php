@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Balance;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class BalanceController extends Controller
 {
@@ -12,7 +13,11 @@ class BalanceController extends Controller
      */
     public function index()
     {
-        //
+        $balance = Balance::all();
+
+        return Inertia::render('Balance/Index', [
+            'balance' => $balance,
+        ]);
     }
 
     /**
