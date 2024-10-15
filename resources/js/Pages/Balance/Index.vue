@@ -1,6 +1,32 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+
+const showModal = ref(false);
+const modalType = ref('');
+
+// Estado para armazenar os valores da transferência
+const transferEmail = ref('');
+const transferAmount = ref('');
+
+// Função para abrir o modal
+const openModal = (type) => {
+    modalType.value = type;
+    showModal.value = true;
+};
+
+// Função para fechar o modal
+const closeModal = () => {
+    showModal.value = false;
+};
+
+// Função para realizar a transferência
+const submitTransfer = () => {
+    console.log(`Transferindo R$ ${transferAmount.value} para ${transferEmail.value}`);
+    // Lógica de transferência
+    closeModal();
+};
 </script>
 
 <template>
@@ -10,5 +36,74 @@ import { Head } from '@inertiajs/vue3';
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Saldo</h2>
         </template>
+
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
+                
+                <!-- Botões para Ações -->
+                <div class="flex justify-end space-x-4">
+                    <button 
+                        @click="openModal('Entrada')" 
+                        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-200">
+                        Entrada
+                    </button>
+                    <button 
+                        @click="openModal('Saída')" 
+                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-200">
+                        Saída
+                    </button>
+                    <button 
+                        @click="openModal('Transferência')" 
+                        class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-200">
+                        Transferência
+                    </button>
+                </div>
+
+                <!-- Card de Saldo -->
+                <div class="bg-blue-500 text-white shadow-lg sm:rounded-lg p-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-lg font-semibold">Yuri do Valle Neves</h3>
+                            <p class="mt-2 text-2xl">Saldo Atual: R$ 10.500,00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div v-if="showModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <h3 class="text-lg font-semibold mb-4">
+                    {{ modalType === 'Entrada' ? 'Registrar Entrada de Saldo' : (modalType === 'Saída' ? 'Registrar Saída' : 'Realizar Transferência') }}
+                </h3>
+
+                <form @submit.prevent="modalType === 'Transferência' ? submitTransfer() : closeModal()">
+                    <!-- Se Transferência, exibir o campo de e-mail -->
+                    <div v-if="modalType === 'Transferência'" class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            E-mail do Destinatário
+                        </label>
+                        <input type="email" v-model="transferEmail" placeholder="exemplo@dominio.com" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                    </div>
+
+                    <!-- Campo de Quantia -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Quantia
+                        </label>
+                        <input type="text" v-model="transferAmount" placeholder="R$ 0,00" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="flex justify-end">
+                        <button type="button" @click="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">Cancelar</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            {{ modalType === 'Transferência' ? 'Transferir' : 'Salvar' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </AuthenticatedLayout>
 </template>
