@@ -12,30 +12,47 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $today = Carbon::today();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+
+        $userId = auth()->id();
     
-        $transactionsToday = Historic::whereDate('created_at', $today)->count();
-        $transactionsTodayValue = Historic::whereDate('created_at', $today)->sum('amount');
+        $transactionsToday = Historic::where('user_id', $userId)
+            ->whereDate('date', Carbon::today())
+            ->count();
     
-        $balance = Balance::where('user_id', auth()->id())->first();
-        $currentBalance = $balance->amount;
+        $transactionsTodayValue = Historic::where('user_id', $userId)
+            ->whereDate('date', Carbon::today())
+            ->sum('amount');
+    
+        $balance = Balance::where('user_id', $userId)->first();
+        $currentBalance = $balance ? $balance->amount : 0;
     
         $previousBalance = $currentBalance - $transactionsTodayValue;
     
-        $totalIncoming = Historic::where('type', 'I')->sum('amount');
-        $totalOutgoing = Historic::where('type', 'O')->sum('amount');
+        $totalIncoming = Historic::where('user_id', $userId)
+            ->where('type', 'I')
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum('amount');
     
-        $lastTransactions = Historic::with('user')
+        $totalOutgoing = Historic::where('user_id', $userId)
+            ->where('type', 'O')
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum('amount');
+    
+        $lastTransactions = Historic::where('user_id', $userId)
+            ->with('user')
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
             ->orderBy('date', 'desc')
             ->take(10)
             ->get();
-
+    
         $lastTransactions->transform(function ($transaction) {
             $transaction->type = $transaction->type($transaction->type);
             $transaction->date = Carbon::parse($transaction->date)->format('d/m/Y');
             return $transaction;
         });
-        
+    
         return Inertia::render('Dashboard', [
             'transactionsToday' => $transactionsToday,
             'transactionsTodayValue' => $transactionsTodayValue,
