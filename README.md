@@ -1,66 +1,123 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Saldo
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+O **Sistema de Saldo** é uma aplicação desenvolvida utilizando Laravel e Vue.js para gerenciar transações financeiras como **Entradas**, **Saídas** e **Transferências**. O sistema inclui funcionalidades de filtro, paginação, exportação de relatórios e um dashboard com visão geral do saldo e transações.
 
-## About Laravel
+## Funcionalidades
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Gestão de Transações**: Registro de transações financeiras, como **Entradas** (depósitos), **Saídas** (saques) e **Transferências**.
+- **Histórico de Transações**: Exibição do histórico de transações com filtros por **data**, **tipo de transação** e **nome de usuário**.
+- **Dashboard**: Resumo com o saldo atual, número total de transações, entradas, saídas e últimas 5 transações.
+- **Exportação de Dados**: Exportação de relatórios de transações para formatos **XLS** e **PDF**.
+- **Paginação**: Navegação entre páginas do histórico de transações.
+- **Filtros Avançados**: Filtro de transações por data, tipo de transação (Entrada, Saída, Transferência) e usuário.
+  
+## Tecnologias Utilizadas
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Backend**: Laravel 9 (PHP 8)
+- **Frontend**: Vue.js 3 com Inertia.js
+- **Estilos**: TailwindCSS
+- **Banco de Dados**: MySQL 8
+- **Outras Dependências**:
+  - Composer
+  - Node.js (npm/yarn para gerenciamento de pacotes)
+  - Exportação para XLS e PDF usando bibliotecas adequadas
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Instalação
 
-## Learning Laravel
+### Pré-requisitos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8+
+- Composer
+- Node.js (npm ou yarn)
+- MySQL 8
+- Git
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Passos
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone o repositório:
 
-## Laravel Sponsors
+   git clone https://github.com/seu-usuario/sistema-de-saldo.git  
+   cd sistema-de-saldo
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. Instale as dependências do PHP:
 
-### Premium Partners
+   composer install
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3. Instale as dependências do JavaScript:
 
-## Contributing
+   npm install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. Configure o arquivo `.env`:
 
-## Code of Conduct
+   - Copie o arquivo de exemplo:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+     cp .env.example .env
 
-## Security Vulnerabilities
+   - Configure as credenciais do banco de dados e outras variáveis de ambiente conforme necessário.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. Gere a chave da aplicação Laravel:
 
-## License
+   php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+6. Execute as migrações para criar as tabelas no banco de dados:
+
+   php artisan migrate
+
+7. Compile os assets do frontend:
+
+   npm run dev
+
+8. Inicie o servidor:
+
+   php artisan serve
+
+## Uso
+
+- Acesse a aplicação em `http://localhost:8000`.
+- Use os botões de **Entrada**, **Saída** e **Transferência** para adicionar novas transações.
+- Filtre o histórico de transações por data, tipo ou usuário para encontrar registros específicos.
+- Exporte os dados de transações usando os botões de exportação.
+
+## Estrutura de Banco de Dados
+
+### Tabela: `balances`
+
+| Campo        | Tipo      | Descrição                |
+|--------------|-----------|--------------------------|
+| `id`         | INT       | Identificador único       |
+| `user_id`    | INT       | ID do usuário relacionado |
+| `amount`     | DECIMAL   | Valor atual do saldo      |
+| `created_at` | TIMESTAMP | Data de criação           |
+| `updated_at` | TIMESTAMP | Data de atualização       |
+
+### Tabela: `historics`
+
+| Campo                | Tipo      | Descrição                             |
+|----------------------|-----------|---------------------------------------|
+| `id`                 | INT       | Identificador único                   |
+| `user_id`            | INT       | ID do usuário que fez a transação     |
+| `type`               | CHAR(1)   | Tipo de transação ('I', 'O', 'T')     |
+| `amount`             | DECIMAL   | Valor da transação                    |
+| `user_id_transaction`| INT       | ID do usuário para transferências     |
+| `created_at`         | TIMESTAMP | Data da transação                     |
+
+## Funcionalidades de Exportação
+
+O sistema permite a exportação dos dados de transações nos seguintes formatos:
+
+- **XLS**: Exporta uma planilha com todos os registros filtrados.
+- **PDF**: Exporta um relatório em PDF das transações filtradas.
+
+## Contribuição
+
+Sinta-se à vontade para contribuir com o projeto! Para contribuir:
+
+1. Faça um fork do repositório.
+2. Crie uma branch com a sua feature ou correção de bug (`git checkout -b minha-feature`).
+3. Faça o commit das suas mudanças (`git commit -am 'Adiciona minha feature'`).
+4. Envie um push para a branch (`git push origin minha-feature`).
+5. Crie um novo Pull Request.
+
+## Licença
+
+Este projeto está licenciado sob a **MIT License**.
