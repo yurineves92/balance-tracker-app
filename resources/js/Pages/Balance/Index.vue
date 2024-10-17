@@ -1,13 +1,22 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+
+const props = defineProps({
+  balance: Array,
+  auth: Object,
+  flash: String
+});
 
 const showModal = ref(false);
 const modalType = ref('');
+const flashMessage = ref(props.flash || null);
 
 const transferEmail = ref('');
 const transferAmount = ref('');
+
+flashMessage.value = props.flash || null;
 
 const openModal = (type) => {
     modalType.value = type;
@@ -24,9 +33,15 @@ const form = useForm({
     email: '',
 });
 
+watch(() => props.flash, (newFlash) => {
+    flashMessage.value = newFlash || null;
+});
+
 const submitTransaction = () => {
     form.post(route('balance.store'), {
-        onSuccess: () => closeModal(),
+        onSuccess: () => {
+            closeModal();
+        },
     });
 };
 
@@ -37,7 +52,9 @@ const handleFormSubmit = () => {
 
     submitTransaction();
 };
+
 </script>
+
 <template>
     <Head title="Saldo" />
 
@@ -48,8 +65,11 @@ const handleFormSubmit = () => {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
-                
-                <!-- Botões para Ações -->
+
+                <div v-if="flashMessage" class="bg-green-500 text-white p-4 rounded mb-4">
+                    {{ flashMessage }}
+                </div>
+
                 <div class="flex justify-end space-x-4">
                     <button 
                         @click="openModal('Entrada')" 
@@ -71,8 +91,8 @@ const handleFormSubmit = () => {
                 <div class="bg-blue-500 text-white shadow-lg sm:rounded-lg p-6">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h3 class="text-lg font-semibold">Yuri do Valle Neves</h3>
-                            <p class="mt-2 text-2xl">Saldo Atual: R$ 10.500,00</p>
+                            <h3 class="text-lg font-semibold">{{ auth.user.name }}</h3>
+                            <p class="mt-2 text-2xl">Saldo Atual: R$ {{ balance[0].amount || '0,00' }}</p>
                         </div>
                     </div>
                 </div>

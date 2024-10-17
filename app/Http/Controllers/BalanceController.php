@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Balance;
+use App\Models\Historic;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,6 +18,7 @@ class BalanceController extends Controller
 
         return Inertia::render('Balance/Index', [
             'balance' => $balance,
+            'flash' => session('message')
         ]);
     }
 
@@ -28,7 +30,11 @@ class BalanceController extends Controller
             'email' => 'nullable|email|required_if:type,T',
         ]);
 
-        $balance = Balance::where('user_id', auth()->id())->firstOrFail();
+        $balance = Balance::firstOrCreate(
+            ['user_id' => auth()->id()],
+            ['amount' => 0]
+        );
+    
         $totalBefore = $balance->amount;
 
         switch ($request->type) {
@@ -57,6 +63,8 @@ class BalanceController extends Controller
                 $recipient->save();
                 break;
         }
+        
+        $balance->save();
 
         Historic::create([
             'user_id' => auth()->id(),
@@ -68,7 +76,7 @@ class BalanceController extends Controller
             'date' => now(),
         ]);
 
-        return back()->with('message', 'Transação realizada com sucesso.');
+        return redirect()->back()->with('message', 'Transação realizada com sucesso.');
     }
 
     /**
