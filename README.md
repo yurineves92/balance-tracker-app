@@ -99,7 +99,7 @@ O **Sistema de Saldo** é uma aplicação desenvolvida utilizando Laravel e Vue.
 | `type`               | CHAR(1)   | Tipo de transação ('I', 'O', 'T')     |
 | `amount`             | DECIMAL   | Valor da transação                    |
 | `user_id_transaction`| INT       | ID do usuário para transferências     |
-| `created_at`         | TIMESTAMP | Data da transação                     |
+| `date`         | TIMESTAMP | Data da transação                     |
 
 ## Funcionalidades de Exportação
 
