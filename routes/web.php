@@ -34,6 +34,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/historic', [HistoricController::class, 'index'])->name('historic.index');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    
+    Route::get('/historics/export/pdf', [HistoricController::class, 'exportPdf'])->name('historic.exportPdf');
+    Route::get('/historics/export/xls', [HistoricController::class, 'exportXls'])->name('historic.exportXls');
 });
 
 require __DIR__.'/auth.php';

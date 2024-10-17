@@ -38,6 +38,27 @@ const clearFilter = () => {
     applyFilter();
 };
 
+const exportToPDF = () => {
+    const url = route('historic.exportPdf', {
+        start_date: startDate.value,
+        end_date: endDate.value,
+        transaction_type: transactionType.value,
+        user_name: userName.value,
+    });
+
+    window.open(url, '_blank');
+};
+
+const exportToXLS = () => {
+    router.visit(route('historic.exportXls'), {
+        start_date: startDate.value,
+        end_date: endDate.value,
+        transaction_type: transactionType.value,
+        user_name: userName.value,
+    });
+    window.open(url, '_blank');
+};
+
 const page = usePage();
 const historic = computed(() => {
     return page.props.historic || { data: [], current_page: 1, last_page: 1 };
