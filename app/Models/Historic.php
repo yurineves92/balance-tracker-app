@@ -40,4 +40,9 @@ class Historic extends Model
         
         return $types[$type];
     }
+
+    public function transactionUser()
+    {
+    return $this->belongsTo(User::class, 'user_id_transaction');
+    }
 }

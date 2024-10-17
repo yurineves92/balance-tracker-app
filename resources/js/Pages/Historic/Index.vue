@@ -1,37 +1,77 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, router, usePage } from '@inertiajs/vue3';
+import { ref, watch, computed } from 'vue';
 
 const startDate = ref('');
 const endDate = ref('');
 const transactionType = ref('');
 const userName = ref('');
 const currentPage = ref(1);
-const transactionsPerPage = 10;
 
 const transactionTypes = [
     { label: 'Todas', value: '' },
-    { label: 'Entrada', value: 'I' }, // I = Entrada
-    { label: 'Saque', value: 'O' }, // O = Saque
-    { label: 'Transferência', value: 'T' } // T = Transferência
+    { label: 'Entrada', value: 'I' },
+    { label: 'Saque', value: 'O' },
+    { label: 'Transferência', value: 'T' }
 ];
 
 const applyFilter = () => {
-    console.log('Filtrando por:', {
-        startDate: startDate.value,
-        endDate: endDate.value,
-        transactionType: transactionType.value,
-        userName: userName.value
+    router.get(route('historic.index'), {
+        start_date: startDate.value,
+        end_date: endDate.value,
+        transaction_type: transactionType.value,
+        user_name: userName.value,
+        page: currentPage.value,
+    }, {
+        preserveState: true
     });
 };
 
-const exportToXLS = () => {
-    console.log('Exportando para XLS...');
+const clearFilter = () => {
+    startDate.value = '';
+    endDate.value = '';
+    transactionType.value = '';
+    userName.value = '';
+    currentPage.value = 1;
+    
+    applyFilter();
 };
 
-const exportToPDF = () => {
-    console.log('Exportando para PDF...');
+const page = usePage();
+const historic = computed(() => {
+    return page.props.historic || { data: [], current_page: 1, last_page: 1 };
+});
+
+const formatCurrency = (value) => {
+    if (!value) return 'R$ 0,00';
+
+    const numericValue = parseFloat(String(value).replace(/[^\d.-]/g, ''));
+    
+    if (isNaN(numericValue)) {
+        return 'R$ 0,00';
+    }
+    
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericValue);
+};
+
+const goToPreviousPage = () => {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+        applyFilter();
+    }
+};
+
+const goToNextPage = () => {
+    if (currentPage.value < historic.value.last_page) {
+        currentPage.value++;
+        applyFilter();
+    }
+};
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('pt-BR').format(date);
 };
 </script>
 
@@ -72,9 +112,12 @@ const exportToPDF = () => {
                         </div>
                     </div>
 
-                    <div class="mt-4 flex justify-end">
+                    <div class="mt-4 flex justify-end space-x-2">
                         <button @click="applyFilter" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200">
                             Filtrar
+                        </button>
+                        <button @click="clearFilter" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition duration-200">
+                            Limpar Filtro
                         </button>
                     </div>
                 </div>
@@ -100,27 +143,31 @@ const exportToPDF = () => {
                                 <th class="px-4 py-2 border-b text-left">Depois</th>
                                 <th class="px-4 py-2 border-b text-left">Data</th>
                                 <th class="px-4 py-2 border-b text-left">Usuário</th>
+                                <th class="px-4 py-2 border-b text-left">Transferência</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="transaction in 10" :key="transaction">
-                                <td class="px-4 py-2 border-b">{{ transaction }}</td>
-                                <td class="px-4 py-2 border-b">Entrada</td>
-                                <td class="px-4 py-2 border-b text-green-500">+R$ 2.500,00</td>
-                                <td class="px-4 py-2 border-b">R$ 30.000,00</td>
-                                <td class="px-4 py-2 border-b">R$ 32.500,00</td>
-                                <td class="px-4 py-2 border-b">15/10/2024</td>
-                                <td class="px-4 py-2 border-b">Yuri</td>
+                            <tr v-for="transaction in historic.data" :key="transaction.id">
+                                <td class="px-4 py-2 border-b">{{ transaction.id }}</td>
+                                <td class="px-4 py-2 border-b">{{ transaction.type }}</td>
+                                <td class="px-4 py-2 border-b">{{ formatCurrency(transaction.amount) }}</td>
+                                <td class="px-4 py-2 border-b">{{ formatCurrency(transaction.total_before) }}</td>
+                                <td class="px-4 py-2 border-b">{{ formatCurrency(transaction.total_after) }}</td>
+                                <td class="px-4 py-2 border-b">{{ formatDate(transaction.date) }}</td>
+                                <td class="px-4 py-2 border-b">{{ transaction.user.name }}</td>
+                                <td class="px-4 py-2 border-b">
+                                    {{ transaction.transaction_user ? transaction.transaction_user.name : 'N/A' }}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
-                    
+
                     <div class="mt-4 flex justify-between items-center">
-                        <button @click="currentPage--" :disabled="currentPage === 1" class="bg-gray-300 text-gray-600 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50">
+                        <button @click="goToPreviousPage" :disabled="currentPage === 1" class="bg-gray-300 text-gray-600 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50">
                             Anterior
                         </button>
-                        <span>Página {{ currentPage }}</span>
-                        <button @click="currentPage++" class="bg-gray-300 text-gray-600 px-4 py-2 rounded hover:bg-gray-400">
+                        <span>Página {{ historic.current_page }} de {{ historic.last_page }}</span>
+                        <button @click="goToNextPage" :disabled="currentPage === historic.last_page" class="bg-gray-300 text-gray-600 px-4 py-2 rounded hover:bg-gray-400">
                             Próxima
                         </button>
                     </div>

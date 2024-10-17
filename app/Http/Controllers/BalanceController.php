@@ -22,6 +22,9 @@ class BalanceController extends Controller
         ]);
     }
 
+    /**
+     * Create transaction.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -77,37 +80,5 @@ class BalanceController extends Controller
         ]);
 
         return redirect()->back()->with('message', 'Transação realizada com sucesso.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Balance $balance)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Balance $balance)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Balance $balance)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Balance $balance)
-    {
-        //
     }
 }
