@@ -20,20 +20,55 @@ class BalanceController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'type' => 'required|in:I,O,T',
+            'amount' => 'required|numeric|min:0.01',
+            'email' => 'nullable|email|required_if:type,T',
+        ]);
+
+        $balance = Balance::where('user_id', auth()->id())->firstOrFail();
+        $totalBefore = $balance->amount;
+
+        switch ($request->type) {
+            case 'I':
+                $balance->amount += $request->amount;
+                break;
+
+            case 'O':
+                if ($balance->amount < $request->amount) {
+                    return back()->withErrors(['message' => 'Saldo insuficiente.']);
+                }
+                $balance->amount -= $request->amount;
+                break;
+
+            case 'T':
+                if ($balance->amount < $request->amount) {
+                    return back()->withErrors(['message' => 'Saldo insuficiente.']);
+                }
+                $balance->amount -= $request->amount;
+
+                $recipient = Balance::whereHas('user', function ($query) use ($request) {
+                    $query->where('email', $request->email);
+                })->firstOrFail();
+
+                $recipient->amount += $request->amount;
+                $recipient->save();
+                break;
+        }
+
+        Historic::create([
+            'user_id' => auth()->id(),
+            'type' => $request->type,
+            'amount' => $request->amount,
+            'total_before' => $totalBefore,
+            'total_after' => $balance->amount,
+            'user_id_transaction' => $request->type === 'T' ? $recipient->user_id : null,
+            'date' => now(),
+        ]);
+
+        return back()->with('message', 'Transação realizada com sucesso.');
     }
 
     /**

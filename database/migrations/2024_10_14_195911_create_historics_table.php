@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('type', ['I', 'O', 'T']); // I = Incoming, O = Outgoing, T = Transfer
-            $table->decimal('amount', 10, 2);
-            $table->decimal('total_before', 10, 2);
-            $table->decimal('total_after', 10, 2);
+            $table->decimal('amount', 10, 2)->default(0);
+            $table->decimal('total_before', 10, 2)->default(0);
+            $table->decimal('total_after', 10, 2)->default(0);
             $table->integer('user_id_transaction')->nullable();
             $table->date('date');
             $table->timestamps();
