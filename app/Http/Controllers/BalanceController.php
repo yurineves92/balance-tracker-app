@@ -14,7 +14,7 @@ class BalanceController extends Controller
      */
     public function index()
     {
-        $balance = Balance::all();
+        $balance = Balance::where(['user_id' => auth()->id()])->get();
 
         return Inertia::render('Balance/Index', [
             'balance' => $balance,
@@ -44,14 +44,14 @@ class BalanceController extends Controller
 
             case 'O':
                 if ($balance->amount < $request->amount) {
-                    return back()->withErrors(['message' => 'Saldo insuficiente.']);
+                    return redirect()->back()->withErrors(['message' => 'Saldo insuficiente.']);
                 }
                 $balance->amount -= $request->amount;
                 break;
 
             case 'T':
                 if ($balance->amount < $request->amount) {
-                    return back()->withErrors(['message' => 'Saldo insuficiente.']);
+                    return redirect()->back()->withErrors(['message' => 'Saldo insuficiente.']);
                 }
                 $balance->amount -= $request->amount;
 

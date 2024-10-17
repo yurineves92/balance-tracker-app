@@ -12,6 +12,7 @@ const props = defineProps({
 const showModal = ref(false);
 const modalType = ref('');
 const flashMessage = ref(props.flash || null);
+const errorMessage = ref(null);
 
 const transferEmail = ref('');
 const transferAmount = ref('');
@@ -39,11 +40,16 @@ watch(() => props.flash, (newFlash) => {
 
 const submitTransaction = () => {
     form.post(route('balance.store'), {
-        onSuccess: () => {
+        onSuccess: (page) => {
+            closeModal();
+        },
+        onError: (errors) => {
+            errorMessage.value = errors.message || 'Ocorreu um erro na transação.';
             closeModal();
         },
     });
 };
+
 
 const handleFormSubmit = () => {
     form.type = modalType.value === 'Entrada' ? 'I' : (modalType.value === 'Saída' ? 'O' : 'T');
@@ -70,6 +76,10 @@ const handleFormSubmit = () => {
                     {{ flashMessage }}
                 </div>
 
+                <div v-if="errorMessage" class="bg-red-500 text-white p-4 rounded mb-4">
+                    {{ errorMessage }}
+                </div>
+                
                 <div class="flex justify-end space-x-4">
                     <button 
                         @click="openModal('Entrada')" 
