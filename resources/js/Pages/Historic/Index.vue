@@ -50,14 +50,31 @@ const exportToPDF = () => {
 };
 
 const exportToXLS = () => {
-    router.visit(route('historic.exportXls'), {
+    const form = document.createElement('form');
+    form.action = route('historic.exportXls');
+    form.method = 'GET';
+    form.target = '_blank';
+
+    const fields = {
         start_date: startDate.value,
         end_date: endDate.value,
         transaction_type: transactionType.value,
         user_name: userName.value,
-    });
-    window.open(url, '_blank');
+    };
+
+    for (const [key, value] of Object.entries(fields)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
 };
+
 
 const page = usePage();
 const historic = computed(() => {
@@ -91,7 +108,8 @@ const goToNextPage = () => {
 };
 
 const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(year, month - 1, day);
     return new Intl.DateTimeFormat('pt-BR').format(date);
 };
 </script>
