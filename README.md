@@ -13,7 +13,7 @@ O **Sistema de Saldo** é uma aplicação desenvolvida utilizando Laravel e Vue.
   
 ## Tecnologias Utilizadas
 
-- **Backend**: Laravel 11 (PHP 8)
+- **Backend**: Laravel 10 (PHP 8)
 - **Frontend**: Vue.js 3 com Inertia.js
 - **Estilos**: TailwindCSS
 - **Banco de Dados**: MySQL 8
